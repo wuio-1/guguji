@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>咕咕鸡 · 下载站</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 0%, #241a3a 0%, transparent 45%),
+      radial-gradient(circle at 85% 100%, #10243a 0%, transparent 50%),
+      #0b0f15;
+    color:#e6eef8;
+    font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    padding:0 18px 60px;
+  }
+  .wrap{max-width:1000px;margin:0 auto}
+
+  /* ---- 头部 ---- */
+  header{display:flex;align-items:center;gap:18px;padding:44px 0 10px}
+  .logo{width:68px;height:68px;flex:0 0 68px}
+  .brand h1{
+    font-size:32px;letter-spacing:4px;
+    background:linear-gradient(90deg,#a86bff,#3aa0ff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .brand p{margin-top:6px;font-size:13px;color:#7f93aa;letter-spacing:1px}
+  .copyBtn{
+    margin-left:auto;padding:9px 16px;border-radius:9px;
+    border:1px solid #2a3d54;background:#141d29;color:#9fc0e0;
+    font-family:inherit;font-size:13px;cursor:pointer;
+  }
+  .copyBtn:hover{border-color:#37b6ff;color:#7fd1ff}
+
+  .tip{
+    margin:22px 0 30px;padding:14px 18px;border-radius:12px;
+    background:rgba(58,160,255,.07);border:1px solid rgba(58,160,255,.18);
+    font-size:13.5px;line-height:1.8;color:#a8c4de;
+  }
+  .tip b{color:#7fd1ff}
+
+  /* ---- 卡片 ---- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px}
+  .card{
+    background:linear-gradient(160deg,#141c27,#0e141d);
+    border:1px solid #1f2c3b;border-radius:14px;
+    padding:20px 20px 18px;display:flex;flex-direction:column;gap:10px;
+    transition:transform .16s, border-color .16s;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#2f4a68}
+  .card .top{display:flex;align-items:center;gap:12px}
+  .card .emoji{font-size:30px;line-height:1}
+  .card h3{font-size:17px;font-weight:700;color:#eaf3ff}
+  .card .ver{font-size:11px;color:#6a819a;margin-left:auto}
+  .card p{font-size:13px;line-height:1.7;color:#94aec8;flex:1}
+  .meta{display:flex;gap:8px;flex-wrap:wrap}
+  .meta span{
+    font-size:11.5px;padding:3px 9px;border-radius:20px;
+    background:#13202d;color:#7fa6c9;border:1px solid #1d2e3f;
+  }
+  .meta span.req{background:rgba(255,176,32,.08);color:#e8b45c;border-color:rgba(255,176,32,.22)}
+  .dl{
+    display:block;text-align:center;margin-top:6px;padding:11px;
+    border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;
+    background:linear-gradient(180deg,#2f9be0,#1f74b4);color:#fff;
+    transition:filter .15s;
+  }
+  .dl:hover{filter:brightness(1.14)}
+  .dl.ghost{background:#16202c;color:#9fc0e0;border:1px solid #24384d}
+
+  footer{margin-top:46px;text-align:center;font-size:12px;color:#4d637a;line-height:2}
+  footer b{color:#7f93aa}
+
+  /* ---- 手机上更紧凑 ---- */
+  @media (max-width:640px){
+    header{flex-wrap:wrap;padding-top:30px}
+    .brand h1{font-size:26px}
+    .copyBtn{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <svg class="logo" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#7c3ebe"/><stop offset="1" stop-color="#3096e4"/>
+        </linearGradient>
+      </defs>
+      <rect width="256" height="256" rx="56" fill="url(#g)"/>
+      <circle cx="128" cy="128" r="80" fill="none" stroke="#fff" stroke-width="15"/>
+      <polygon points="92,76 92,180 196,128" fill="#fff"/>
+    </svg>
+    <div class="brand">
+      <h1>咕咕鸡</h1>
+      <p>GuGu Chicken · 能吊、能播、能整蛊</p>
+    </div>
+    <button class="copyBtn" onclick="copyLink()">🔗 复制本页链接</button>
+  </header>
+
+  <div class="tip">
+    <b>下载即用，无需安装。</b>网页类产品直接在浏览器打开；Python 类产品需要先装
+    <b>Python 3.8+</b>（<a href="https://www.python.org/downloads/" target="_blank" style="color:#7fd1ff">python.org</a>，安装时勾选 Add to PATH）。
+  </div>
+
+  <div class="grid">
+
+    <div class="card" style="border-color:#2f6b46;background:linear-gradient(160deg,#14261c,#0e141d)">
+      <div class="top"><span class="emoji">📦</span><h3>咕咕鸡播放器 · 安卓 APK</h3><span class="ver">v1.0</span></div>
+      <p><b style="color:#7dffa8">真·APK，装上就是 App</b>，不用浏览器、不怕刷新掉状态。内置手机版播放器，选歌/选片直接播，放音乐有咕咕鸡跳舞 🐔</p>
+      <div class="meta"><span>36.8 KB</span><span>安卓 5.0+</span><span>免 Python</span></div>
+      <a class="dl" href="咕咕鸡播放器.apk" download>下载 APK</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">💻</span><h3>咕咕鸡播放器 · 免安装版</h3><span class="ver">v1.0</span></div>
+      <p>Windows 用，<b style="color:#7fd1ff">已经把 Python 打包进去了</b>，解压双击就能用。含跳舞咕咕鸡。</p>
+      <div class="meta"><span>10.5 MB</span><span>Windows 10/11</span><span>免 Python</span></div>
+      <a class="dl" href="咕咕鸡播放器_免Python_v1.0.zip" download>下载 ZIP</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">📱</span><h3>咕咕鸡播放器 · 手机版</h3><span class="ver">单文件</span></div>
+      <p>手机/平板用。<b style="color:#7fd1ff">一个 HTML 文件、不用装 App、不用 Python</b>。打开后选文件就能播，可"添加到主屏幕"。</p>
+      <div class="meta"><span>12 KB</span><span>安卓 / iOS</span><span>离线可用</span></div>
+      <a class="dl" href="咕咕鸡播放器-手机版.html" download>下载 HTML</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🎬</span><h3>咕咕鸡播放器</h3><span class="ver">v1.0</span></div>
+      <p>本地视频/音乐播放器。支持 MP4/WebM/MP3/M4A/FLAC，放音乐时会出现一只跳舞的咕咕鸡。</p>
+      <div class="meta"><span>50 KB</span><span>Windows</span><span class="req">需要 Python</span></div>
+      <a class="dl" href="咕咕鸡播放器_v1.0.zip" download>下载 ZIP</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">💬</span><h3>咕咕鸡弹窗生成器</h3><span class="ver">网页版</span></div>
+      <p>仿 Windows 11 的错误对话框，自定义标题/内容/按钮，一键弹窗雨。不会被杀毒软件拦。</p>
+      <div class="meta"><span>12 KB</span><span>任何浏览器</span><span>零依赖</span></div>
+      <a class="dl" href="咕咕鸡弹窗生成器.html" download>下载 HTML</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">💙</span><h3>咕咕鸡假蓝屏</h3><span class="ver">网页版</span></div>
+      <p>Win11 风格蓝屏整蛊页，带进度动画和假二维码。按 ESC 三次退出。</p>
+      <div class="meta"><span>6 KB</span><span>任何浏览器</span><span>零依赖</span></div>
+      <a class="dl" href="咕咕鸡假蓝屏.html" download>下载 HTML</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🌧️</span><h3>咕咕鸡弹窗雨</h3><span class="ver">Python</span></div>
+      <p>调用系统原生弹窗 API，100 个"系统错误"窗口陆续弹出。连按 3 次 ESC 可全部关掉。</p>
+      <div class="meta"><span>5 KB</span><span>Windows</span><span class="req">需要 Python</span></div>
+      <a class="dl" href="咕咕鸡弹窗雨.py" download>下载 PY</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🏷️</span><h3>咕咕鸡铭牌</h3><span class="ver">配套 GC-500</span></div>
+      <p>木质吊车的出厂铭牌，带完整技术参数。打印后剪下贴在车身侧面。</p>
+      <div class="meta"><span>8 KB</span><span>任何浏览器</span><span>可打印</span></div>
+      <a class="dl ghost" href="咕咕鸡铭牌.html">打开查看</a>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="emoji">🎨</span><h3>咕咕鸡品牌形象</h3><span class="ver">官方设定</span></div>
+      <p>品牌主视觉：爆炸星芒 + 愤怒的咕咕鸡 + 被炸飞的老板。「别在咕咕鸡面前跳舞」。</p>
+      <div class="meta"><span>4 KB</span><span>任何浏览器</span><span>矢量</span></div>
+      <a class="dl ghost" href="咕咕鸡品牌形象.html">打开查看</a>
+    </div>
+
+  </div>
+
+  <footer>
+    咕咕鸡（GuGu Chicken）· 2026 · 档案编号 GGC-2026-11-21-001<br>
+    本页由 <b>serve_download.py</b> 提供 · 所有文件均可直接下载
+  </footer>
+
+</div>
+
+<script>
+function copyLink(){
+  const url = location.href;
+  const done = () => {
+    const b = document.querySelector('.copyBtn');
+    const old = b.textContent;
+    b.textContent = '✅ 已复制';
+    setTimeout(() => b.textContent = old, 1400);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => fallback());
+  } else fallback();
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) { prompt('复制这个链接：', url); }
+    document.body.removeChild(ta);
+  }
+}
+</script>
+</body>
+</html>

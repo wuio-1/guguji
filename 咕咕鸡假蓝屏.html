@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>:(</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: #0a7bd4;                     /* Win11 蓝 */
+    color: #fff;
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    cursor: default;
+    user-select: none;
+  }
+  #wrap {
+    height: 100%; display: flex; flex-direction: column;
+    justify-content: center; padding: 6vh 7vw;
+  }
+  #face {
+    font-size: clamp(56px, 11vh, 120px);
+    line-height: 1; margin-bottom: 3vh; font-weight: 300;
+  }
+  #main {
+    font-size: clamp(17px, 3.2vh, 34px);
+    line-height: 1.5; margin-bottom: 4vh; max-width: 900px;
+  }
+  #pct {
+    font-size: clamp(15px, 2.6vh, 28px);
+    margin-bottom: 5vh; min-height: 1.4em;
+  }
+  #qrRow {
+    display: flex; align-items: flex-start; gap: 18px;
+    margin-bottom: 3vh; opacity: 0;                       /* 进度 100% 才出现 */
+    transition: opacity 1.2s ease;
+  }
+  #qrRow.show { opacity: 1; }
+  #qr {
+    width: clamp(72px, 11vh, 128px); height: clamp(72px, 11vh, 128px);
+    background: #fff; flex: 0 0 auto; padding: 4px;
+    display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(15, 1fr);
+  }
+  #qr i { background: #fff; }
+  #qr i.on { background: #000; }
+  #qrText {
+    font-size: clamp(11px, 1.7vh, 18px); line-height: 1.55;
+    opacity: .92; padding-top: 4px; max-width: 640px;
+  }
+  #qrText b { font-weight: 600; }
+  #stop {
+    font-size: clamp(11px, 1.7vh, 18px); line-height: 1.7;
+    opacity: 0; transition: opacity 1.2s ease;
+  }
+  #stop.show { opacity: .92; }
+  #stop code {
+    font-family: "Consolas", "Courier New", monospace;
+    letter-spacing: .5px;
+  }
+  /* 隐藏的退出提示 */
+  #hint {
+    position: fixed; right: 3vw; bottom: 2.5vh;
+    font-size: 11px; opacity: .18;
+  }
+  #reveal {
+    position: fixed; inset: 0; display: none;
+    background: radial-gradient(circle at 50% 40%, #1f2a3a, #0c1219);
+    color: #e8f1fb; padding: 8vh 8vw;
+    flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; gap: 20px; z-index: 10;
+  }
+  #reveal.on { display: flex; }
+  #reveal h1 { font-size: clamp(26px, 5vh, 52px); }
+  #reveal p  { font-size: clamp(14px, 2.2vh, 22px); color: #9fb6cd; line-height: 1.8; }
+  #reveal code { background: #16202c; padding: 2px 8px; border-radius: 5px; color: #7fd1ff; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="face">:(</div>
+  <div id="main">你的设备遇到问题，需要重启。我们只收集某些错误信息，然后为你重新启动。</div>
+  <div id="pct">0% 完成</div>
+
+  <div id="qrRow">
+    <div id="qr"></div>
+    <div id="qrText">
+      有关此问题的详细信息和可能的解决方法，请访问<br>
+      <b>https://www.windows.com/stopcode</b>
+    </div>
+  </div>
+
+  <div id="stop">
+    如果致电支持人员，请向他们提供以下信息：<br>
+    停止代码：<code>CRITICAL_PROCESS_DIED</code>
+  </div>
+</div>
+
+<div id="hint">按 ESC 三次退出（摸摸头）</div>
+
+<div id="reveal">
+  <h1>🎉 上当啦</h1>
+  <p>
+    这是个假蓝屏 😄<br>
+    想退出？按 <code>ESC</code> 三次，或者点右上角。
+  </p>
+</div>
+
+<script>
+/* ---------------- 假二维码（确定性随机，看起来像真的） ---------------- */
+(function drawQR() {
+  const qr = document.getElementById('qr');
+  let seed = 20261121;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  const N = 15;
+  const cells = [];
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) cells.push({x, y});
+
+  // 三个角上的定位方块
+  const inFinder = (x, y) =>
+    (x < 5 && y < 5) || (x >= N - 5 && y < 5) || (x < 5 && y >= N - 5);
+  const finderOn = (x, y) => {
+    // 外框
+    const bx = Math.min(x, N - 1 - x), by = Math.min(y, N - 1 - y);
+    if (!inFinder(x, y)) return null;
+    const lx = x < 5 ? x : x - (N - 5);
+    const ly = y < 5 ? y : y - (N - 5);
+    const ring = Math.max(Math.abs(lx - 2), Math.abs(ly - 2));
+    return ring !== 1;                  // 2,2 中心 + 外框黑
+  };
+
+  for (const c of cells) {
+    const i = document.createElement('i');
+    const f = finderOn(c.x, c.y);
+    if (f === null) {
+      if (rnd() > 0.52) i.className = 'on';
+    } else if (f) {
+      i.className = 'on';
+    }
+    qr.appendChild(i);
+  }
+})();
+
+/* ---------------- 进度动画 ---------------- */
+const pct = document.getElementById('pct');
+const qrRow = document.getElementById('qrRow');
+const stopBox = document.getElementById('stop');
+let p = 0;
+
+const timer = setInterval(() => {
+  // 前段快、中段磨蹭、后段慢（像真的卡在 87% 那样）
+  let step;
+  if (p < 30) step = 3 + Math.random() * 5;
+  else if (p < 60) step = 0.8 + Math.random() * 2;
+  else if (p < 88) step = 0.3 + Math.random() * 1.1;
+  else step = 0.15 + Math.random() * 0.6;
+
+  p = Math.min(100, p + step);
+  pct.textContent = Math.floor(p) + '% 完成';
+
+  if (p >= 100) {
+    clearInterval(timer);
+    qrRow.classList.add('show');
+    setTimeout(() => stopBox.classList.add('show'), 700);
+  }
+}, 260);
+
+/* ---------------- 退出：ESC 三次，或点右上角 ---------------- */
+let escCount = 0;
+const reveal = document.getElementById('reveal');
+
+function bail() {
+  reveal.classList.add('on');
+  document.title = '🎉 上当啦';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    escCount++;
+    if (escCount >= 3) bail();
+  }
+});
+
+// 手机上没 ESC：连点右上角 3 次
+let tapCount = 0, tapTimer = null;
+document.addEventListener('click', e => {
+  if (e.clientX > window.innerWidth - 120 && e.clientY < 120) {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => (tapCount = 0), 1200);
+    if (tapCount >= 3) bail();
+  }
+});
+
+reveal.addEventListener('click', () => {
+  reveal.classList.remove('on');
+  escCount = 0;
+  tapCount = 0;
+  document.title = ':(';
+});
+
+// 防止滚动/缩放
+document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>

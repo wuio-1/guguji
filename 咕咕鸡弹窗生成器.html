@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Windows</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; overflow:hidden; }
+  body {
+    background:
+      radial-gradient(circle at 22% 18%, #2b4f7a 0%, transparent 46%),
+      radial-gradient(circle at 78% 78%, #16324f 0%, transparent 50%),
+      linear-gradient(135deg, #10233b 0%, #0a1626 55%, #0d1e33 100%);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    user-select:none;
+  }
+
+  /* ============ Windows 11 风对话框 ============ */
+  .dlg {
+    position:absolute;
+    width: 424px;
+    background: #f3f3f3;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.10), 0 18px 46px rgba(0,0,0,.46), 0 2px 8px rgba(0,0,0,.24);
+    color: #1b1b1b;
+    overflow:hidden;
+    animation: pop .13s ease-out;
+    will-change: transform;
+  }
+  @keyframes pop { from { transform: scale(.96); opacity:.7 } to { transform: scale(1); opacity:1 } }
+
+  .bar {
+    display:flex; align-items:center;
+    height: 32px; padding: 0 4px 0 14px;
+    font-size: 12px; color:#3b3b3b;
+  }
+  .bar .t { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis }
+  .bar .x {
+    width: 46px; height: 28px; border:0; background:transparent; cursor:pointer;
+    border-radius: 4px; color:#444; font-size: 11px; line-height:1;
+  }
+  .bar .x:hover { background:#e81123; color:#fff }
+
+  .body {
+    display:flex; gap:16px;
+    padding: 2px 22px 20px 22px;
+    min-height: 74px;
+  }
+  .ico { width:34px; height:34px; flex:0 0 34px; margin-top:3px }
+  .msg {
+    font-size: 14px; line-height: 1.55; color:#1b1b1b;
+    white-space: pre-wrap; word-break: break-word;
+    padding-top: 4px;
+  }
+
+  .btns {
+    display:flex; justify-content:flex-end; gap:8px;
+    padding: 0 22px 20px;
+  }
+  .btns button {
+    min-width: 88px; height: 30px; padding: 0 16px;
+    background: #fbfbfb;
+    border: 1px solid #c8c8c8;
+    border-bottom-color: #b0b0b0;
+    border-radius: 4px;
+    font-family: inherit; font-size: 13px; color:#1b1b1b;
+    cursor:pointer;
+  }
+  .btns button:hover { background:#f0f0f0 }
+  .btns button:active { background:#e6e6e6 }
+  .btns button.primary {
+    border-color:#0078d4; box-shadow: inset 0 0 0 1px #0078d4;
+  }
+  .btns button.primary:hover { background:#eaf4fd }
+
+  /* ============ 控制面板 ============ */
+  #panel {
+    position:fixed; left:14px; top:14px; z-index: 9999;
+    width: 330px; padding: 16px;
+    background: rgba(16,26,38,.94);
+    border:1px solid rgba(120,180,240,.22);
+    border-radius: 12px;
+    color:#dbe8f5; font-size:13px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    backdrop-filter: blur(8px);
+    transition: transform .2s, opacity .2s;
+  }
+  #panel.hide { transform: translateX(-360px); opacity:0; pointer-events:none }
+  #panel h2 { font-size:14px; margin-bottom:12px; color:#7fd1ff; letter-spacing:.5px }
+  #panel label { display:block; font-size:11.5px; color:#8fa8c0; margin: 10px 0 4px }
+  #panel input[type=text], #panel textarea, #panel input[type=number] {
+    width:100%; background:#0c151f; border:1px solid #24384d; color:#e8f1fb;
+    border-radius:6px; padding:7px 9px; font-family:inherit; font-size:13px; outline:none;
+  }
+  #panel textarea { resize: vertical; min-height: 62px; line-height:1.5 }
+  #panel input:focus, #panel textarea:focus { border-color:#37b6ff }
+  #panel .row { display:flex; gap:8px }
+  #panel .row > * { flex:1 }
+  #panel .icons { display:flex; gap:8px; margin-top:4px }
+  #panel .icons button {
+    flex:1; padding:8px 4px; background:#0c151f; border:1px solid #24384d;
+    border-radius:6px; color:#c9dcef; cursor:pointer; font-family:inherit; font-size:12px;
+  }
+  #panel .icons button.on { border-color:#37b6ff; background:#12314a; color:#fff }
+  #panel .go {
+    width:100%; margin-top:14px; padding:10px; border:0; border-radius:8px;
+    background: linear-gradient(180deg,#2c94d6,#1f76b4); color:#fff;
+    font-family:inherit; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  #panel .go:hover { filter:brightness(1.12) }
+  #panel .go.rain { background: linear-gradient(180deg,#d9524a,#b0362f) }
+  #panel .tip { margin-top:10px; font-size:11px; color:#7188a0; line-height:1.6 }
+  #toggle {
+    position:fixed; left:14px; top:14px; z-index: 9998;
+    width:40px; height:40px; border-radius:10px;
+    background: rgba(16,26,38,.9); border:1px solid rgba(120,180,240,.22);
+    color:#8fa8c0; font-size:16px; cursor:pointer; display:none;
+  }
+  #toggle.show { display:block }
+  #hint {
+    position:fixed; right:14px; bottom:12px; font-size:11px; color:rgba(200,220,240,.30);
+  }
+</style>
+</head>
+<body>
+
+<button id="toggle" title="显示设置">⚙</button>
+
+<div id="panel">
+  <h2>Windows 弹窗生成器</h2>
+
+  <label>标题</label>
+  <input type="text" id="iTitle" value="系统警告">
+
+  <label>内容（可多行）</label>
+  <textarea id="iMsg">要不要删除 Windows 文件夹？</textarea>
+
+  <label>图标</label>
+  <div class="icons">
+    <button data-k="error" class="on">✕ 错误</button>
+    <button data-k="warn">⚠ 警告</button>
+    <button data-k="info">ℹ 信息</button>
+  </div>
+
+  <label>按钮</label>
+  <div class="row">
+    <input type="text" id="iOk" value="是">
+    <input type="text" id="iNo" value="否">
+  </div>
+
+  <label>弹窗数量（弹窗雨）</label>
+  <input type="number" id="iCount" value="40" min="1" max="300">
+
+  <button class="go" id="btnOne">弹出一个</button>
+  <button class="go rain" id="btnRain">弹窗雨 🌧️</button>
+
+  <div class="tip">
+    ESC 关掉全部 · 拖标题栏可移动弹窗<br>
+    再按 ESC 一次显示"骗你的"揭晓
+  </div>
+</div>
+
+<div id="hint">ESC 关闭全部</div>
+
+<script>
+/* ---------------- 图标（内联 SVG，模仿 Windows 11） ---------------- */
+const ICONS = {
+  error: `<svg viewBox="0 0 32 32" width="34" height="34">
+    <circle cx="16" cy="16" r="14" fill="#c42b1c"/>
+    <path d="M10.5 10.5 L21.5 21.5 M21.5 10.5 L10.5 21.5"
+          stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+  </svg>`,
+  warn: `<svg viewBox="0 0 32 32" width="34" height="34">
+    <path d="M16 3.6 L30 28.4 H2 Z" fill="#f5c518" stroke="#b58f00" stroke-width="1"/>
+    <rect x="14.8" y="11" width="2.4" height="9" rx="1.2" fill="#3a2c00"/>
+    <circle cx="16" cy="24" r="1.5" fill="#3a2c00"/>
+  </svg>`,
+  info: `<svg viewBox="0 0 32 32" width="34" height="34">
+    <circle cx="16" cy="16" r="14" fill="#0b6bcb"/>
+    <circle cx="16" cy="10" r="1.8" fill="#fff"/>
+    <rect x="14.6" y="14" width="2.8" height="10" rx="1.4" fill="#fff"/>
+  </svg>`
+};
+
+/* ---------------- 声音（合成 Windows 提示音） ---------------- */
+let actx = null;
+function beep() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const t0 = actx.currentTime;
+    // 两个音，模拟系统提示音
+    [[880, 0.00], [660, 0.11]].forEach(([f, d]) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t0 + d);
+      g.gain.linearRampToValueAtTime(0.16, t0 + d + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0008, t0 + d + 0.26);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t0 + d); o.stop(t0 + d + 0.3);
+    });
+  } catch (e) { /* 静默失败 */ }
+}
+
+/* ---------------- 生成弹窗 ---------------- */
+const state = { icon: 'error' };
+
+function makeDialog(opts) {
+  const { title, msg, okText, noText, x, y, stagger } = opts;
+
+  const d = document.createElement('div');
+  d.className = 'dlg';
+  d.innerHTML = `
+    <div class="bar">
+      <div class="t"></div>
+      <button class="x" title="关闭">✕</button>
+    </div>
+    <div class="body">
+      <div class="ico">${ICONS[state.icon]}</div>
+      <div class="msg"></div>
+    </div>
+    <div class="btns">
+      <button class="primary">${esc(okText || '确定')}</button>
+      ${noText === null ? '' : `<button class="no">${esc(noText || '取消')}</button>`}
+    </div>`;
+
+  d.querySelector('.t').textContent = title || '系统警告';
+  d.querySelector('.msg').textContent = msg || '';
+
+  // 位置：不超出窗口
+  const W = 424, H = 200;
+  const maxX = Math.max(0, window.innerWidth - W);
+  const maxY = Math.max(0, window.innerHeight - H);
+  const px = x === undefined ? Math.round((maxX) / 2 + (Math.random() - .5) * 60) : Math.min(maxX, Math.max(0, x));
+  const py = y === undefined ? Math.round((maxY) / 2 + (Math.random() - .5) * 40) : Math.min(maxY, Math.max(0, y));
+  d.style.left = px + 'px';
+  d.style.top = py + 'px';
+  if (stagger) d.style.zIndex = 100 + stagger;
+
+  // 关闭
+  const kill = () => d.remove();
+  d.querySelector('.x').onclick = kill;
+  d.querySelector('.primary').onclick = kill;
+  const nb = d.querySelector('.no');
+  if (nb) nb.onclick = kill;
+
+  // 拖动（按住标题栏）
+  let dragging = false, ox = 0, oy = 0;
+  const bar = d.querySelector('.bar');
+  bar.style.cursor = 'move';
+  bar.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('x')) return;
+    dragging = true;
+    ox = e.clientX - d.offsetLeft;
+    oy = e.clientY - d.offsetTop;
+    d.style.zIndex = 99999;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    d.style.left = (e.clientX - ox) + 'px';
+    d.style.top = (e.clientY - oy) + 'px';
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  document.body.appendChild(d);
+  return d;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+/* ---------------- 读取面板 ---------------- */
+const $ = id => document.getElementById(id);
+function readForm() {
+  return {
+    title: $('iTitle').value.trim() || '系统警告',
+    msg: $('iMsg').value,
+    okText: $('iOk').value.trim() || '确定',
+    noText: $('iNo').value.trim(),
+  };
+}
+
+/* ---------------- 按钮 ---------------- */
+$('btnOne').onclick = () => {
+  const f = readForm();
+  makeDialog({ ...f, stagger: 0 });
+  beep();
+};
+
+$('btnRain').onclick = () => {
+  const f = readForm();
+  const n = Math.max(1, Math.min(300, parseInt($('iCount').value) || 40));
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= n) { clearInterval(timer); return; }
+    makeDialog({
+      ...f,
+      title: f.title + ' (' + (i + 1) + '/' + n + ')',
+      stagger: i,
+    });
+    if (i < 8) beep();
+    i++;
+  }, 55);
+};
+
+/* ---------------- 图标切换 ---------------- */
+document.querySelectorAll('#panel .icons button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#panel .icons button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    state.icon = b.dataset.k;
+  };
+});
+
+/* ---------------- ESC：关全部 / 揭晓 ---------------- */
+let escPhase = 0;
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const dialogs = document.querySelectorAll('.dlg');
+  if (dialogs.length > 0) {
+    dialogs.forEach(d => d.remove());
+    escPhase = 1;
+    return;
+  }
+  if (escPhase === 1) {
+    const f = readForm();
+    makeDialog({
+      title: '真相',
+      msg: '骗你的 😄\n\n一个文件都没删。\n这只是一个网页。',
+      okText: '好吧',
+      noText: null,
+    });
+    escPhase = 2;
+  }
+});
+
+/* ---------------- 面板折叠 ---------------- */
+$('toggle').onclick = () => {
+  $('panel').classList.remove('hide');
+  $('toggle').classList.remove('show');
+};
+window.addEventListener('keydown', e => {
+  if (e.key === 'h' || e.key === 'H') {
+    $('panel').classList.toggle('hide');
+    $('toggle').classList.toggle('show', $('panel').classList.contains('hide'));
+  }
+});
+
+/* 首次点一下页面，解锁音频 */
+document.addEventListener('click', () => { try { beep.__wake || (beep.__wake = 1); if (!actx) beep(); } catch(e){} }, { once: true });
+
+/* ?demo=N 直接弹出 N 个（也方便截图/演示） */
+(function demoMode() {
+  const qp = new URLSearchParams(location.search);
+  if (!qp.has('demo')) return;
+  const n = Math.max(1, Math.min(12, parseInt(qp.get('demo')) || 1));
+  const f = readForm();
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      makeDialog({
+        ...f,
+        title: f.title + (n > 1 ? ' (' + (i + 1) + '/' + n + ')' : ''),
+        stagger: i,
+      });
+    }, 260 + i * 170);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>咕咕鸡 · 出厂铭牌</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:22px;
+    background:#1a1f26; font-family:"Microsoft YaHei","Segoe UI",sans-serif;
+    padding:30px;
+  }
+
+  /* ======== 铭牌本体 ======== */
+  .plate {
+    position:relative;
+    width: 640px; height: 400px;
+    border-radius: 10px;
+    background:
+      repeating-linear-gradient(92deg,
+        rgba(0,0,0,.05) 0px, rgba(0,0,0,.05) 2px,
+        rgba(255,255,255,.04) 2px, rgba(255,255,255,.04) 5px),
+      linear-gradient(160deg, #8a6035 0%, #6b4522 45%, #8a6035 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.28) inset,
+      0 -2px 6px rgba(0,0,0,.45) inset,
+      0 14px 40px rgba(0,0,0,.6);
+    padding: 26px 30px;
+    color:#f4e3c8;
+  }
+  /* 四角螺丝 */
+  .plate i {
+    position:absolute; width:14px; height:14px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #e8dcc8, #8b8172 60%, #4c463d);
+    box-shadow: 0 1px 2px rgba(0,0,0,.6);
+  }
+  .plate i::after {
+    content:''; position:absolute; left:2px; top:6px; width:10px; height:2px;
+    background:rgba(0,0,0,.45); transform:rotate(35deg);
+  }
+  .plate i:nth-child(1){ left:9px;  top:9px;  }
+  .plate i:nth-child(2){ right:9px; top:9px;  }
+  .plate i:nth-child(3){ left:9px;  bottom:9px; }
+  .plate i:nth-child(4){ right:9px; bottom:9px; }
+
+  .head {
+    display:flex; align-items:center; gap:14px;
+    border-bottom:2px solid rgba(244,227,200,.28);
+    padding-bottom:12px; margin-bottom:14px;
+  }
+  .chick { font-size:44px; line-height:1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+  .name  {
+    font-size:52px; font-weight:800; letter-spacing:6px;
+    color:#ffe9b8; text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 0 18px rgba(255,220,140,.25);
+  }
+  .model {
+    margin-left:auto; text-align:right; font-size:13px; line-height:1.6;
+    color:#e8d3ae; opacity:.9;
+  }
+  .model b { display:block; font-size:22px; letter-spacing:2px; color:#ffd98a; }
+
+  .specs {
+    display:grid; grid-template-columns: 1fr 1fr; gap:9px 26px;
+    font-size:14.5px; line-height:1.5;
+  }
+  .specs div { display:flex; justify-content:space-between; border-bottom:1px dashed rgba(244,227,200,.18); padding-bottom:4px; }
+  .specs span:first-child { color:#d9c19b; }
+  .specs span:last-child  { color:#fff3d6; font-weight:700; }
+
+  .foot {
+    position:absolute; left:30px; right:30px; bottom:20px;
+    display:flex; justify-content:space-between;
+    font-size:11.5px; color:#c9b28c; opacity:.85;
+  }
+
+  /* ======== 页面按钮 ======== */
+  .bar { display:flex; gap:12px; }
+  .bar button {
+    padding:11px 22px; border-radius:9px; border:1px solid #3a4a5e;
+    background:#22303f; color:#dbe8f5; font-family:inherit; font-size:14px; cursor:pointer;
+  }
+  .bar button:hover { border-color:#37b6ff; color:#7fd1ff; }
+  .hint { font-size:12.5px; color:#7f93aa; text-align:center; line-height:1.7; }
+
+  /* ======== 打印 ======== */
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background:#fff; padding:0; display:block; }
+    .bar, .hint { display:none; }
+    .plate {
+      width: 150mm; height: 94mm;
+      box-shadow:none;
+      margin: 0 auto;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .name { font-size: 46px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="plate">
+  <i></i><i></i><i></i><i></i>
+
+  <div class="head">
+    <div class="chick">🐔</div>
+    <div class="name">咕咕鸡</div>
+    <div class="model">
+      型号 <b>GC-500</b>
+      自制电动吊车
+    </div>
+  </div>
+
+  <div class="specs">
+    <div><span>最大起重量</span><span>500 g</span></div>
+    <div><span>最大幅度</span><span>400 mm</span></div>
+    <div><span>行走系统</span><span>四轮驱动</span></div>
+    <div><span>回转系统</span><span>吊臂座旋转</span></div>
+    <div><span>伸缩系统</span><span>两节套接臂</span></div>
+    <div><span>变幅系统</span><span>齿条小车</span></div>
+    <div><span>起升系统</span><span>滑轮卷扬（双向）</span></div>
+    <div><span>控制方式</span><span>有线按键面板</span></div>
+  </div>
+
+  <div class="foot">
+    <span>材料：木质结构 + TT 减速电机</span>
+    <span>出厂：2026-11-21</span>
+  </div>
+</div>
+
+<div class="bar">
+  <button onclick="window.print()">🖨 打印 / 存 PDF</button>
+</div>
+
+<div class="hint">
+  打印后沿边剪下，用双面胶贴在车身侧面 ✅<br>
+  想要小一点？打印时缩放 40%（约 6×4 cm）更像真铭牌 ✅
+</div>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0f15">
+<title>咕咕鸡播放器 · 手机版</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;overflow-x:hidden}
+  body{
+    background:radial-gradient(circle at 50% 0%, #1a2338 0%, #0a0f16 60%);
+    color:#e6eef8;font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    display:flex;flex-direction:column;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+
+  /* ---------- 顶栏 ---------- */
+  header{
+    display:flex;align-items:center;gap:10px;padding:12px 16px;
+    border-bottom:1px solid #1b2534;flex:0 0 auto;
+  }
+  header svg{width:30px;height:30px}
+  header h1{font-size:15px;letter-spacing:.5px;color:#dbe9f8;white-space:nowrap}
+  header .cnt{margin-left:auto;font-size:11.5px;color:#647c95}
+  header .addbtn{
+    width:34px;height:34px;flex:0 0 34px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:#1b2a3c;border:1px solid #2a3d54;color:#7fd1ff;
+    font-size:20px;font-weight:700;cursor:pointer;line-height:1;
+  }
+  header .addbtn:active{background:#243448}
+
+  /* ---------- 舞台 ---------- */
+  #stage{
+    flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+    background:#000;overflow:hidden;min-height:0;
+  }
+  #v{max-width:100%;max-height:100%;display:block;background:#000}
+  #chicken{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 62%, #1b2a3d 0%, #0b1118 72%);
+  }
+  #chicken.on{display:flex}
+  #chicken .wrap{height:70%;transform:scale(calc(1 + var(--b,0) * .12));transition:transform .07s linear}
+  #chicken svg{height:100%;width:auto;display:block;filter:drop-shadow(0 14px 26px rgba(0,0,0,.55))}
+  .cg-b{animation:gb .52s ease-in-out infinite alternate;transform-origin:104px 190px}
+  .cg-w{animation:gw .34s ease-in-out infinite alternate;transform-origin:100px 116px}
+  .cg-h{animation:gh .52s ease-in-out infinite alternate;transform-origin:138px 96px}
+  @keyframes gb{from{transform:translateY(0) rotate(-2.5deg)}to{transform:translateY(-11px) rotate(3deg)}}
+  @keyframes gw{from{transform:rotate(-16deg)}to{transform:rotate(20deg)}}
+  @keyframes gh{from{transform:rotate(-7deg)}to{transform:rotate(8deg)}}
+
+  #empty{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;
+  }
+  #empty .big{font-size:13.5px;line-height:1.85;color:#8fa8c0;max-width:300px;word-break:break-word}
+  #empty .big b{color:#7fd1ff;display:block;font-size:18px;margin-bottom:8px}
+  .pick{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:14px 28px;border-radius:12px;border:0;cursor:pointer;
+    background:linear-gradient(180deg,#2f9be0,#1f74b4);color:#fff;
+    font-family:inherit;font-size:15.5px;font-weight:700;
+    box-shadow:0 8px 22px rgba(31,116,180,.4);
+  }
+  .pick:active{filter:brightness(1.12)}
+
+  /* ---------- 列表 ---------- */
+  #list{
+    flex:0 0 auto;max-height:34vh;overflow-y:auto;
+    background:#0d141d;border-top:1px solid #1b2534;
+  }
+  #list .it{
+    display:flex;align-items:center;gap:10px;padding:11px 16px;
+    border-bottom:1px solid #131c28;font-size:13px;cursor:pointer;
+  }
+  #list .it.on{background:#152234;border-left:3px solid #37b6ff}
+  #list .it .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cfe0f2}
+  #list .it .k{font-size:10.5px;padding:2px 7px;border-radius:10px;background:#12202e;color:#6fa3cc;flex:0 0 auto}
+  #list .it .k.audio{background:rgba(58,160,255,.12);color:#7fd1ff}
+
+  /* ---------- 控制栏 ---------- */
+  #ctl{flex:0 0 auto;background:#0d141d;border-top:1px solid #1b2534;padding:9px 14px 12px}
+  #bar{height:4px;background:#1c2a3a;border-radius:2px;position:relative;margin-bottom:10px}
+  #fill{height:100%;width:0;background:linear-gradient(90deg,#37b6ff,#a86bff);border-radius:2px;position:relative}
+  #dot{position:absolute;right:0;top:-4px;width:12px;height:12px;transform:translateX(50%);border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(120,200,255,.8)}
+  .row{display:flex;align-items:center;gap:10px}
+  .row button{
+    border:0;background:#16212e;color:#cfe0f2;border-radius:10px;
+    font-family:inherit;font-size:15px;padding:10px 14px;cursor:pointer;
+  }
+  .row button:active{background:#1e2e40}
+  .row #play{background:linear-gradient(180deg,#2f9be0,#1f74b4);color:#fff;font-weight:700;padding:10px 22px;font-size:15px}
+  .row #time{font-size:12px;color:#7d95ad;font-variant-numeric:tabular-nums;margin-left:auto}
+  .row #nm{font-size:11.5px;color:#647c95;max-width:36vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  #toast{
+    position:fixed;left:50%;bottom:18%;transform:translateX(-50%);
+    background:rgba(20,30,42,.95);border:1px solid #2a3d54;color:#cfe3f7;
+    padding:10px 18px;border-radius:10px;font-size:13px;
+    opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;
+  }
+  #toast.on{opacity:1}
+  #upbar{
+    position:fixed;left:10px;right:10px;bottom:calc(96px + env(safe-area-inset-bottom));
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    background:linear-gradient(180deg,#2f9be0,#1f74b4);color:#fff;
+    border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.45);z-index:50;
+    font-size:13.5px;
+  }
+  #upbar span{flex:1}
+  #upbar button{
+    border:0;border-radius:8px;padding:7px 14px;font-family:inherit;font-size:13px;
+    background:#fff;color:#1668a3;font-weight:700;cursor:pointer;
+  }
+  #upbar button.close{background:transparent;color:#dbeaf7;font-size:18px;padding:0 6px;font-weight:400}
+</style>
+</head>
+<body>
+
+<header>
+  <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3ebe"/><stop offset="1" stop-color="#3096e4"/>
+    </linearGradient></defs>
+    <rect width="256" height="256" rx="56" fill="url(#g)"/>
+    <circle cx="128" cy="128" r="80" fill="none" stroke="#fff" stroke-width="15"/>
+    <polygon points="92,76 92,180 196,128" fill="#fff"/>
+  </svg>
+  <h1>咕咕鸡播放器</h1>
+  <label class="addbtn" for="file" title="继续添加文件">＋</label>
+  <div class="cnt" id="cnt">0 个文件</div>
+</header>
+
+<div id="stage">
+  <video id="v" playsinline webkit-playsinline preload="metadata"></video>
+
+  <div id="chicken">
+    <div class="wrap">
+      <svg viewBox="0 0 220 230" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="108" cy="215" rx="54" ry="9" fill="#000" opacity=".35"/>
+        <g class="cg-b">
+          <path d="M88 172 l-6 26 M120 172 l6 26" stroke="#f5a623" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M82 198 l-13 6 M82 198 l13 6 M126 198 l-13 6 M126 198 l13 6" stroke="#f5a623" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M46 106 q-32 -22 -40 3 q23 4 33 19 z" fill="#f2f2f2"/>
+          <ellipse cx="104" cy="124" rx="64" ry="56" fill="#ffffff"/>
+          <g class="cg-w"><path d="M96 116 q23 -15 46 2 q-17 27 -46 13 z" fill="#ededed" stroke="#dedede" stroke-width="2"/></g>
+          <g class="cg-h">
+            <circle cx="146" cy="64" r="35" fill="#ffffff"/>
+            <path d="M127 35 q4 -17 15 -5 q5 -16 14 -5 q6 -13 11 7 q-21 10 -40 3 z" fill="#e5484d"/>
+            <path d="M177 60 l23 7 l-23 9 z" fill="#f5a623"/>
+            <path d="M175 73 q6 12 1 17 q-9 -2 -10 -12 z" fill="#e5484d"/>
+            <circle cx="159" cy="56" r="5.5" fill="#121212"/>
+            <path d="M150 66 q11 6 19 0" stroke="#e5484d" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="empty">
+    <div class="big"><b>选点东西听 / 看</b>手机上不能自动扫文件，需要你手动选一次<br>（选完就能在这个页面里换着播）</div>
+    <label class="pick" for="file">📂 选择文件</label>
+  </div>
+</div>
+
+<div id="list"></div>
+
+<div id="ctl">
+  <div id="bar"><div id="fill"><div id="dot"></div></div></div>
+  <div class="row">
+    <button id="prev">⏮</button>
+    <button id="play">▶ 播放</button>
+    <button id="next">⏭</button>
+    <div id="nm"></div>
+    <div id="time"><b>0:00</b> / 0:00</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<input type="file" id="file" multiple hidden accept="audio/*,video/*,.mp3,.m4a,.flac,.wav,.ogg,.opus,.mp4,.webm,.mov">
+
+<script>
+const v = document.getElementById('v');
+const $ = id => document.getElementById(id);
+let items = [], cur = -1, rafId = 0, AC = null, AN = null, SRC = null;
+
+/* ---------- 选文件 ---------- */
+$('file').addEventListener('change', e => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  items = items.concat(files.map(f => ({
+    name: f.name,
+    url: URL.createObjectURL(f),
+    audio: /audio\//.test(f.type) || /\.(mp3|m4a|aac|flac|wav|ogg|opus)$/i.test(f.name)
+  })));
+  renderList();
+  if (cur < 0) play(0);
+  toast('已添加 ' + files.length + ' 个文件');
+  e.target.value = '';   // 允许重复选同一个文件
+});
+
+function renderList() {
+  $('cnt').textContent = items.length + ' 个文件';
+  const box = $('list');
+  box.innerHTML = '';
+  items.forEach((it, i) => {
+    const d = document.createElement('div');
+    d.className = 'it' + (i === cur ? ' on' : '');
+    d.innerHTML = '<span class="n"></span><span class="k ' + (it.audio ? 'audio' : '') + '">' +
+      (it.audio ? '音频' : '视频') + '</span>';
+    d.querySelector('.n').textContent = it.name;
+    d.onclick = () => play(i);
+    box.appendChild(d);
+  });
+}
+
+/* ---------- 播放 ---------- */
+function play(i) {
+  if (i < 0 || i >= items.length) return;
+  cur = i;
+  const it = items[i];
+  v.src = it.url;
+  v.play().catch(() => {});
+  $('empty').style.display = 'none';
+  $('nm').textContent = it.name;
+  document.title = it.name;
+  $('chicken').classList.toggle('on', it.audio);
+  if (it.audio) {
+    initAudio();
+    if (AC && AC.state === 'suspended') AC.resume().catch(() => {});
+    if (!rafId) beat();
+  } else {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    $('chicken').style.setProperty('--b', '0');
+  }
+  renderList();
+}
+
+v.addEventListener('play', () => {
+  $('play').textContent = '⏸ 暂停';
+  if (AC && AC.state === 'suspended') AC.resume().catch(() => {});
+});
+v.addEventListener('pause', () => $('play').textContent = '▶ 播放');
+v.addEventListener('ended', () => { if (cur + 1 < items.length) play(cur + 1); });
+v.addEventListener('timeupdate', () => {
+  const p = v.duration ? v.currentTime / v.duration * 100 : 0;
+  $('fill').style.width = p + '%';
+  $('time').innerHTML = '<b>' + fmt(v.currentTime) + '</b> / ' + fmt(v.duration || 0);
+});
+v.addEventListener('error', () => {
+  const it = items[cur];
+  if (it) toast('这个格式手机可能不支持：' + it.name);
+});
+
+function fmt(s) {
+  s = Math.max(0, Math.floor(s || 0));
+  const m = Math.floor(s / 60), x = s % 60;
+  return m + ':' + (x < 10 ? '0' : '') + x;
+}
+
+/* ---------- 控制 ---------- */
+$('play').onclick = () => {
+  if (!v.src) { if (items.length) play(0); return; }
+  v.paused ? v.play().catch(() => {}) : v.pause();
+};
+$('prev').onclick = () => play(Math.max(0, cur - 1));
+$('next').onclick = () => play(Math.min(items.length - 1, cur + 1));
+$('bar').onclick = e => {
+  if (!v.duration) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  v.currentTime = (e.clientX - r.left) / r.width * v.duration;
+};
+
+/* ---------- 咕咕鸡节奏 ---------- */
+function initAudio() {
+  if (SRC) return;
+  try {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    AN = AC.createAnalyser();
+    AN.fftSize = 512;
+    AN.smoothingTimeConstant = .72;
+    SRC = AC.createMediaElementSource(v);
+    SRC.connect(AN);
+    AN.connect(AC.destination);
+  } catch (e) { AC = null; AN = null; SRC = null; }
+}
+function beat() {
+  if (!AN) return;
+  const buf = new Uint8Array(AN.frequencyBinCount);
+  AN.getFrequencyData = AN.getByteFrequencyData;
+  AN.getByteFrequencyData(buf);
+  let sum = 0;
+  for (let i = 0; i < 12; i++) sum += buf[i];
+  $('chicken').style.setProperty('--b', Math.min(1, (sum / 12) / 170).toFixed(3));
+  rafId = requestAnimationFrame(beat);
+}
+
+/* ---------- 提示 ---------- */
+let tT = 0;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(tT);
+  tT = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+/* ---------- 桌面键位 ---------- */
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); $('play').click(); }
+  if (e.key === 'ArrowLeft') v.currentTime = Math.max(0, v.currentTime - 5);
+  if (e.key === 'ArrowRight') v.currentTime = Math.min(v.duration || 0, v.currentTime + 5);
+  if (e.key === 'ArrowUp') v.volume = Math.min(1, v.volume + .1);
+  if (e.key === 'ArrowDown') v.volume = Math.max(0, v.volume - .1);
+});
+
+/* ---------- 桌面拖放 ---------- */
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer.files || []);
+  if (!files.length) return;
+  items = items.concat(files.map(f => ({
+    name: f.name,
+    url: URL.createObjectURL(f),
+    audio: /audio\//.test(f.type) || /\.(mp3|m4a|aac|flac|wav|ogg|opus)$/i.test(f.name)
+  })));
+  renderList();
+  if (cur < 0) play(0);
+});
+
+/* ---------- 自动更新（仅在 APK 内生效）---------- */
+const UPDATE_BASE = "https://xhtml-refer-qty-february.trycloudflare.com";
+
+(async function checkUpdate() {
+  if (typeof window.Android === "undefined") return;      // 浏览器里没有这个桥
+  try {
+    const r = await fetch(UPDATE_BASE + "/version.json?t=" + Date.now());
+    if (!r.ok) return;
+    const j = await r.json();
+    const cur = window.Android.versionCode();
+    if (j && j.versionCode > cur) showUpdateBar(j);
+  } catch (e) { /* 没网就算了，不影响播放 */ }
+})();
+
+function showUpdateBar(j) {
+  if (document.getElementById("upbar")) return;
+  const bar = document.createElement("div");
+  bar.id = "upbar";
+  const span = document.createElement("span");
+  span.textContent = "发现新版本 v" + j.versionName;
+  const btn = document.createElement("button");
+  btn.textContent = "立即更新";
+  btn.onclick = () => {
+    btn.textContent = "下载中…";
+    btn.disabled = true;
+    try { window.Android.startUpdate(UPDATE_BASE + "/" + encodeURIComponent(j.file)); }
+    catch (e) { btn.textContent = "更新失败"; }
+    setTimeout(() => { btn.textContent = "立即更新"; btn.disabled = false; }, 20000);
+  };
+  const close = document.createElement("button");
+  close.textContent = "×";
+  close.className = "close";
+  close.onclick = () => bar.remove();
+  bar.appendChild(span); bar.appendChild(btn); bar.appendChild(close);
+  document.body.appendChild(bar);
+}
+renderList();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>咕咕鸡 · 品牌形象</title>
+<style>
+  html,body{margin:0;padding:0;background:#14181f;display:flex;align-items:center;justify-content:center;height:100vh;font-family:"Microsoft YaHei",sans-serif}
+  svg{display:block}
+</style>
+</head>
+<body>
+<svg width="640" height="640" viewBox="0 0 640 640">
+  <defs>
+    <radialGradient id="boom" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#fff3a0"/>
+      <stop offset="45%" stop-color="#ffb020"/>
+      <stop offset="75%" stop-color="#e8590c"/>
+      <stop offset="100%" stop-color="#e8590c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#241a3a"/>
+      <stop offset="100%" stop-color="#101a2e"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#a86bff"/>
+      <stop offset="100%" stop-color="#3aa0ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="640" height="640" fill="url(#bgg)"/>
+  <circle cx="320" cy="300" r="250" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+  <circle cx="320" cy="300" r="205" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1.5"/>
+
+  <!-- 爆炸星芒 -->
+  <g transform="translate(320 300)">
+    <path fill="url(#boom)" opacity="0.95"
+      d="M0,-210 L26,-92 L96,-178 L74,-64 L186,-96 L104,-6 L200,48 L84,58
+         L128,158 L40,96 L0,200 L-40,96 L-128,158 L-84,58 L-200,48 L-104,-6
+         L-186,-96 L-74,-64 L-96,-178 L-26,-92 Z"/>
+  </g>
+
+  <!-- 被炸飞的老板（跳舞姿势，斜着飞出去）-->
+  <g transform="translate(150 170) rotate(-32)" opacity="0.95">
+    <circle cx="0" cy="0" r="24" fill="#0b0e13"/>
+    <path d="M0 24 L-8 104" stroke="#0b0e13" stroke-width="16" stroke-linecap="round"/>
+    <path d="M-2 44 L-52 4 M-2 44 L46 10" stroke="#0b0e13" stroke-width="13" stroke-linecap="round"/>
+    <path d="M-8 104 L-46 152 M-8 104 L40 140" stroke="#0b0e13" stroke-width="13" stroke-linecap="round"/>
+    <!-- 运动线 -->
+    <path d="M-70 -40 L-110 -70 M-40 -70 L-70 -108 M-96 20 L-140 6"
+          stroke="#ffd166" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <!-- 咕咕鸡本体 -->
+  <g transform="translate(340 320)">
+    <!-- 身体 -->
+    <ellipse cx="0" cy="40" rx="96" ry="82" fill="#ffffff"/>
+    <!-- 尾巴 -->
+    <path d="M-88 10 q-46 -34 -58 4 q34 6 50 26 z" fill="#f2f2f2"/>
+    <!-- 头 -->
+    <circle cx="62" cy="-42" r="52" fill="#ffffff"/>
+    <!-- 鸡冠 -->
+    <path d="M34 -86 q6 -26 22 -8 q8 -24 22 -8 q10 -18 18 10 q-30 16 -62 6 z" fill="#e5484d"/>
+    <!-- 喙 -->
+    <path d="M108 -46 l34 10 l-34 12 z" fill="#f5a623"/>
+    <!-- 肉垂 -->
+    <path d="M104 -26 q10 18 2 26 q-12 -2 -14 -18 z" fill="#e5484d"/>
+    <!-- 眼睛（愤怒） -->
+    <circle cx="82" cy="-54" r="7" fill="#121212"/>
+    <path d="M68 -70 l26 10" stroke="#121212" stroke-width="5" stroke-linecap="round"/>
+    <!-- 翅膀 -->
+    <path d="M-10 34 q34 -22 66 2 q-24 40 -66 18 z" fill="#ededed"/>
+    <!-- 腿 -->
+    <path d="M-18 118 l-8 34 M22 118 l10 34" stroke="#f5a623" stroke-width="10" stroke-linecap="round"/>
+    <path d="M-26 152 l-16 8 M-26 152 l16 8 M32 152 l-16 8 M32 152 l16 8"
+          stroke="#f5a623" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <!-- 小火花 -->
+  <g fill="#ffd166" opacity="0.9">
+    <circle cx="470" cy="170" r="5"/>
+    <circle cx="510" cy="230" r="3.5"/>
+    <circle cx="440" cy="120" r="3"/>
+    <circle cx="230" cy="430" r="4"/>
+    <circle cx="480" cy="430" r="3"/>
+  </g>
+
+  <!-- 文字 -->
+  <text x="320" y="540" text-anchor="middle"
+        font-size="64" font-weight="800" letter-spacing="10" fill="url(#brand)">咕咕鸡</text>
+  <text x="320" y="578" text-anchor="middle"
+        font-size="17" letter-spacing="6" fill="#8fa8c0">GuGu Chicken</text>
+  <text x="320" y="612" text-anchor="middle"
+        font-size="15" fill="#6c8199">「别在咕咕鸡面前跳舞」</text>
+</svg>
+</body>
+</html>
