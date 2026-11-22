@@ -1,7 +1,7 @@
 {
-  "versionCode": 3,
-  "versionName": "1.2",
+  "versionCode": 4,
+  "versionName": "1.3",
   "file": "咕咕鸡播放器.apk",
   "date": "2026-11-22",
-  "notes": "自动更新改为固定地址 GitHub Pages；修复顶栏加号按钮"
+  "notes": "新增：一键扫描手机里的音乐和视频，不用再手动选文件"
 }
